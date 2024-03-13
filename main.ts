@@ -25,12 +25,14 @@ export default class SecondBrain extends Plugin {
 			name: 'Create a new project',
 			callback: () => {
 				new InputModal(this.app, async result => {
-					let path = `1_projeto/${result}`;
-					await this.app.vault.createFolder(path);
-					await this.app.vault.create(`${path}/index.md`, '# Index');
-					// console.log(`New project name: ${result}`)
+					let indexPath = `1_projeto/${result}`;
+					await this.app.vault.createFolder(indexPath);
+					let indexFile = await this.app.vault.create(`${indexPath}/${result}.md`, '# Index');
+					// TODO: open index file after creating new project
+					let leaf = this.app.workspace.getLeaf(false);
+					await leaf.openFile(indexFile);
 				}).open();
-			}
+			},
 		});
 		// // This adds an editor command that can perform some operation on the current editor instance
 		// this.addCommand({
@@ -106,7 +108,7 @@ class InputModal extends Modal {
 					});
 			})
 
-		this.scope.register([], "Enter", (evt: KeyboardEvent) => {
+		this.scope.register([], "Enter", evt => {
 			if (evt.isComposing) { return; };
 
 			this.close();
