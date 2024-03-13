@@ -1,4 +1,5 @@
 import { App, Setting, MarkdownView, Modal, Plugin } from 'obsidian';
+import * as fs from 'fs';
 
 // Remember to rename these classes and interfaces!
 
@@ -23,8 +24,11 @@ export default class SecondBrain extends Plugin {
 			id: 'create-new-project',
 			name: 'Create a new project',
 			callback: () => {
-				new InputModal(this.app, result => {
-					console.log(`New project name: ${result}`)
+				new InputModal(this.app, async result => {
+					let path = `1_projeto/${result}`;
+					await this.app.vault.createFolder(path);
+					await this.app.vault.create(`${path}/index.md`, '# Index');
+					// console.log(`New project name: ${result}`)
 				}).open();
 			}
 		});
