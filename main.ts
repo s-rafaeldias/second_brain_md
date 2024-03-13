@@ -105,6 +105,13 @@ class InputModal extends Modal {
 						this.onSubmit(this.projectName);
 					});
 			})
+
+		this.scope.register([], "Enter", (evt: KeyboardEvent) => {
+			if (evt.isComposing) { return; };
+
+			this.close();
+			this.onSubmit(this.projectName);
+		});
 	}
 
 	onClose() {
