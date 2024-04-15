@@ -1,20 +1,19 @@
-import { App, Setting, MarkdownView, Modal, Plugin } from 'obsidian';
-import * as fs from 'fs';
+import { App, Setting, Modal, Plugin } from 'obsidian';
 
-// Remember to rename these classes and interfaces!
-
-interface MyPluginSettings {
+interface SecondBrainSettings {
 	mySetting: string;
 }
 
-const DEFAULT_SETTINGS: MyPluginSettings = {
+const DEFAULT_SETTINGS: SecondBrainSettings = {
 	mySetting: 'default'
 }
 
+// Custom types {{{
 type onSumbitFunc = (projectName: string) => void;
+// }}}
 
 export default class SecondBrain extends Plugin {
-	settings: MyPluginSettings;
+	settings: SecondBrainSettings;
 
 	async onload() {
 		await this.loadSettings();
@@ -25,48 +24,31 @@ export default class SecondBrain extends Plugin {
 			name: 'Create a new project',
 			callback: () => {
 				new InputModal(this.app, async result => {
-					let indexPath = `1_projeto/${result}`;
+					const indexPath = `1_projeto/${result}`;
 					await this.app.vault.createFolder(indexPath);
-					let indexFile = await this.app.vault.create(`${indexPath}/${result}.md`, '# Index');
-					// TODO: open index file after creating new project
-					let leaf = this.app.workspace.getLeaf(false);
+
+					const indexFile = await this.app.vault.create(`${indexPath}/${result}.md`, '# Index');
+
+					const leaf = this.app.workspace.getLeaf(false);
 					await leaf.openFile(indexFile);
 				}).open();
 			},
 		});
-		// // This adds an editor command that can perform some operation on the current editor instance
-		// this.addCommand({
-		// 	id: 'sample-editor-command',
-		// 	name: 'Sample editor command',
-		// 	editorCallback: (editor: Editor, view: MarkdownView) => {
-		// 		console.log(editor.getSelection());
-		// 		editor.replaceSelection('Sample Editor Command');
-		// 	}
-		// });
-		// // This adds a complex command that can check whether the current state of the app allows execution of the command
-		// this.addCommand({
-		// 	id: 'open-sample-modal-complex',
-		// 	name: 'Open sample modal (complex)',
-		// 	checkCallback: (checking: boolean) => {
-		// 		// Conditions to check
-		// 		const markdownView = this.app.workspace.getActiveViewOfType(MarkdownView);
-		// 		if (markdownView) {
-		// 			// If checking is true, we're simply "checking" if the command can be run.
-		// 			// If checking is false, then we want to actually perform the operation.
-		// 			if (!checking) {
-		// 				new SampleModal(this.app).open();
-		// 			}
-		//
-		// 			// This command will only show up in Command Palette when the check function returns true
-		// 			return true;
-		// 		}
-		// 	}
-		// });
+
+		// TODO: add context when creating a new note (use current note path to create on the same project)
+		// TODO: add keyboard shortcut option for this command
+		this.addCommand({
+			id: 'create-new-note',
+			name: 'Create a new note',
+			callback: () => {
+				// select which project
+				// select note name
+				// create new note (add some template for metadata info?)
+			},
+		});
 	}
 
-	onunload() {
-
-	}
+	onunload() { }
 
 	async loadSettings() {
 		this.settings = Object.assign({}, DEFAULT_SETTINGS, await this.loadData());
